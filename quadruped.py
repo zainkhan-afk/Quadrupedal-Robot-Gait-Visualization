@@ -1,9 +1,10 @@
-# from shape import Shape
 from cvrenderer.cvrenderer.shapes.line import Line
 from cvrenderer.cvrenderer.shapes.rectangle import Rectangle
 from cvrenderer.cvrenderer.scene import Scene
 from cvrenderer.cvrenderer.shapes.joint import Joint
 import numpy as np
+
+from kinematics import Kinematics
 
 class Quadruped:
 	def __init__(self, x = 0, y = 0, z = 0,
@@ -17,6 +18,8 @@ class Quadruped:
 		self.l1 = 0.077476
 		self.l2 = 0.2115
 		self.l3 = 0.2
+
+		self.kine_model = Kinematics()
 
 
 		self.body = Rectangle(x=0, y=0, z=0.3, w=self.body_w, l=self.body_l, thickness=2)
@@ -44,13 +47,11 @@ class Quadruped:
 						self.rl_hip, self.rl_knee, self.rl_calf
 						]
 
-		self.joints = []
-
 		self.fr_j1 = Joint(x = self.body_w/2, y =self.body_l/2, z = 0.3, axis = [0, 1, 0], parent = self.body, child = self.fr_hip)
 		self.fr_j2 = Joint(x = self.body_w/2+self.l1, y =self.body_l/2, z = 0.3, axis = [1, 0, 0], parent = self.fr_hip, child = self.fr_knee)
 		self.fr_j3 = Joint(x = self.body_w/2+self.l1, y =self.body_l/2, z = 0.3-self.l2, axis = [1, 0, 0], parent = self.fr_knee, child = self.fr_calf)
 
-		self.fl_j1 = Joint(x = -self.body_w/2, y =self.body_l/2, z = 0.3, axis = [0, 1, 0], parent = self.body, child = self.fr_hip)
+		self.fl_j1 = Joint(x = -self.body_w/2, y =self.body_l/2, z = 0.3, axis = [0, 1, 0], parent = self.body, child = self.fl_hip)
 		self.fl_j2 = Joint(x = -(self.body_w/2+self.l1), y =self.body_l/2, z = 0.3, axis = [1, 0, 0], parent = self.fl_hip, child = self.fl_knee)
 		self.fl_j3 = Joint(x = -(self.body_w/2+self.l1), y =self.body_l/2, z = 0.3-self.l2, axis = [1, 0, 0], parent = self.fl_knee, child = self.fl_calf)
 
@@ -62,20 +63,28 @@ class Quadruped:
 		self.rl_j2 = Joint(x = -(self.body_w/2+self.l1), y =-self.body_l/2, z = 0.3, axis = [1, 0, 0], parent = self.rl_hip, child = self.rl_knee)
 		self.rl_j3 = Joint(x = -(self.body_w/2+self.l1), y =-self.body_l/2, z = 0.3-self.l2, axis = [1, 0, 0], parent = self.rl_knee, child = self.rl_calf)
 
+		self.joints = [
+						self.fr_j1, self.fr_j2, self.fr_j3,
+						self.fl_j1, self.fl_j2, self.fl_j3,
+						self.rr_j1, self.rr_j2, self.rr_j3,
+						self.rl_j1, self.rl_j2, self.rl_j3
+						]
+	def rotate_body(self, ang):
+		self.body.rotate(0, 0, ang)
+		# self.move_joints()
 
-	def move_joints(self, ang):
-		self.fr_j1.set_joint_position(0)
-		self.fr_j2.set_joint_position(0)
-		self.fr_j3.set_joint_position(ang)
+	def stand_up(self):
+		th1, th2, th3 = self.kine_model.IK(0, self.l1, -0.3)
+		angles = [
+					th1, th2, th3,
+					th1, th2, th3,
+					th1, th2, th3,
+					th1, th2, th3
+				]
+		self.move_joints(angles)
 
-		self.fl_j1.set_joint_position(0)
-		self.fl_j2.set_joint_position(0)
-		self.fl_j3.set_joint_position(ang)
-
-		self.rr_j1.set_joint_position(0)
-		self.rr_j2.set_joint_position(0)
-		self.rr_j3.set_joint_position(ang)
-
-		self.rl_j1.set_joint_position(0)
-		self.rl_j2.set_joint_position(0)
-		self.rl_j3.set_joint_position(ang)
+	def move_joints(self, angles):
+		i = 0
+		for ang in angles:
+			self.joints[i].set_joint_position(ang)
+			i += 1

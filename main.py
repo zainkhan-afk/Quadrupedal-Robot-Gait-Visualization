@@ -26,7 +26,10 @@ camera_x = 0
 camera_y = 0
 camera_z = 7
 while True:
-	quadruped.move_joints(ang)
+	quadruped.rotate_body(ang)
+	angles = [0,0,ang,0,0,ang,0,0,ang,0,0,ang]
+	# quadruped.move_joints(angles)
+	quadruped.stand_up()
 	# camera.rotate(np.pi/6, 0, ang/2)
 	ang += 0.025
 	k = scene.render_scene()
