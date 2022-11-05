@@ -1,0 +1,3 @@
+[submodule "cvrenderer"]
+	path = cvrenderer
+	url = https://github.com/zainkhan-afk/OpenCV-3D-Renderer.git
