@@ -1,6 +1,7 @@
 import numpy as np
+from cvrenderer.cvrenderer.utils import *
 
-class Kinematics:
+class LegKinematicsModel:
 	def __init__(self):
 		self.l1 = 0.077476
 		self.l2 = 0.2115
@@ -38,3 +39,23 @@ class Kinematics:
 		theta2 = np.arctan2(z_, x_) - np.arctan2(self.l3*np.sin(theta3),(self.l2 + self.l3*np.cos(theta3)))+np.pi/2
 
 		return theta1, theta2, theta3
+
+class BodyKinematicsModel:
+	def __init__(self):
+		self.leg_origins = np.array([
+								[0.196, -0.049664, 0], # FL
+								[0.196, 0.049664, 0], # FR
+								[-0.196, -0.049664, 0], # RL
+								[-0.196, 0.049664, 0] # RR
+								])
+
+	def solve(self, x, y, z, rot_x, rot_y, rot_z):
+		P_o_ee = np.array([[x, y, z]])
+		
+		R_b_o = get_rotation_matrix(rot_x, rot_y, rot_z)
+
+		temp = P_o_ee + (leg_origins - center)
+
+		P_b_ee = np.dot(R_b_o.T, temp.T).T
+
+		P_o_ee_rotated = P_b_ee - (leg_origins + center)

@@ -4,7 +4,8 @@ from cvrenderer.cvrenderer.scene import Scene
 from cvrenderer.cvrenderer.shapes.joint import Joint
 import numpy as np
 
-from kinematics import Kinematics
+from kinematics import LegKinematicsModel
+from gaits import Trot
 
 class Quadruped:
 	def __init__(self, x = 0, y = 0, z = 0,
@@ -19,7 +20,9 @@ class Quadruped:
 		self.l2 = 0.2115
 		self.l3 = 0.2
 
-		self.kine_model = Kinematics()
+		self.kine_model = LegKinematicsModel()
+		self.trot = Trot()
+		self.gait_idx = 0
 
 
 		self.body = Rectangle(x=0, y=0, z=0.3, w=self.body_w, l=self.body_l, thickness=2)
@@ -41,10 +44,10 @@ class Quadruped:
 		self.rl_calf = Line(x = -(self.body_w/2+self.l1), y = -self.body_l/2, z = 0.3-(self.l3/2+self.l2), length = self.l3, thickness=2)
 
 		self.shapes = [self.body, 
-						self.fr_hip, self.fr_knee, self.fr_calf,
 						self.fl_hip, self.fl_knee, self.fl_calf,
-						self.rr_hip, self.rr_knee, self.rr_calf,
-						self.rl_hip, self.rl_knee, self.rl_calf
+						self.fr_hip, self.fr_knee, self.fr_calf,
+						self.rl_hip, self.rl_knee, self.rl_calf,
+						self.rr_hip, self.rr_knee, self.rr_calf
 						]
 
 		self.fr_j1 = Joint(x = self.body_w/2, y =self.body_l/2, z = 0.3, axis = [0, 1, 0], parent = self.body, child = self.fr_hip)
@@ -64,10 +67,10 @@ class Quadruped:
 		self.rl_j3 = Joint(x = -(self.body_w/2+self.l1), y =-self.body_l/2, z = 0.3-self.l2, axis = [1, 0, 0], parent = self.rl_knee, child = self.rl_calf)
 
 		self.joints = [
-						self.fr_j1, self.fr_j2, self.fr_j3,
 						self.fl_j1, self.fl_j2, self.fl_j3,
-						self.rr_j1, self.rr_j2, self.rr_j3,
-						self.rl_j1, self.rl_j2, self.rl_j3
+						self.fr_j1, self.fr_j2, self.fr_j3,
+						self.rl_j1, self.rl_j2, self.rl_j3,
+						self.rr_j1, self.rr_j2, self.rr_j3
 						]
 	def rotate_body(self, ang):
 		self.body.rotate(0, 0, ang)
@@ -88,3 +91,15 @@ class Quadruped:
 		for ang in angles:
 			self.joints[i].set_joint_position(ang)
 			i += 1
+
+	def walk(self):
+		leg_positions, self.gait_idx = self.trot.get_leg_positions(self.gait_idx)
+		joint_positions = []
+
+		for leg_pos in leg_positions:
+			th1, th2, th3 = self.kine_model.IK(leg_pos[0], leg_pos[1], leg_pos[2])
+			joint_positions.append(th1)
+			joint_positions.append(th2)
+			joint_positions.append(th3)
+
+		self.move_joints(joint_positions)
