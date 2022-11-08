@@ -15,7 +15,7 @@ quadruped = Quadruped()
 camera = Camera(x = 0, y = 0, z = 5, 
 				cx = scene_width//2, cy = scene_height//2, 
 				fx = 2000, fy = 2000, 
-				x_rot = np.pi/6, z_rot = np.pi/3)
+				x_rot = np.pi/6, z_rot = 4*np.pi/3)
 
 scene.add_camera(camera)
 scene.add_axis(scaler=0.1)
@@ -28,7 +28,7 @@ camera_z = 7
 quadruped.stand_up()
 while True:
 	quadruped.walk()
-	camera.rotate(np.pi/6, 0, ang)
+	# camera.rotate(np.pi/6, 0, ang)
 	ang += 0.025
 	k = scene.render_scene()
 	if k == ord("q"):

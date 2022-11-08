@@ -1,5 +1,6 @@
 from cvrenderer.cvrenderer.shapes.line import Line
 from cvrenderer.cvrenderer.shapes.rectangle import Rectangle
+from cvrenderer.cvrenderer.shapes.cube import Cube
 from cvrenderer.cvrenderer.scene import Scene
 from cvrenderer.cvrenderer.shapes.joint import Joint
 import numpy as np
@@ -24,24 +25,47 @@ class Quadruped:
 		self.trot = Trot()
 		self.gait_idx = 0
 
+		self.leg_thickness = 5
+		self.leg_color = (0, 0, 0)
 
-		self.body = Rectangle(x=0, y=0, z=0.3, w=self.body_w, l=self.body_l, thickness=2)
+
+		self.body = Cube(x=0, y=0, z=0.3, h=self.body_l, w=self.body_w, l=self.body_w/2, thickness=2)
 		
-		self.fr_hip = Line(x = self.body_w/2+self.l1/2, y = self.body_l/2, z = 0.3, y_rot = np.pi/2, length = self.l1, thickness=2)
-		self.fr_knee = Line(x = self.body_w/2+self.l1, y = self.body_l/2, z = 0.3-self.l2/2, length = self.l2, thickness=2)
-		self.fr_calf = Line(x = self.body_w/2+self.l1, y = self.body_l/2, z = 0.3-(self.l3/2+self.l2), length = self.l3, thickness=2)
+		self.fr_hip = Line(x = self.body_w/2+self.l1/2, y = self.body_l/2, z = 0.3, 
+							y_rot = np.pi/2, length = self.l1, 
+							thickness=self.leg_thickness, color=self.leg_color)
+		self.fr_knee = Line(x = self.body_w/2+self.l1, y = self.body_l/2, z = 0.3-self.l2/2, 
+							length = self.l2, 
+							thickness=self.leg_thickness, color=self.leg_color)
+		self.fr_calf = Line(x = self.body_w/2+self.l1, y = self.body_l/2, z = 0.3-(self.l3/2+self.l2), 
+							length = self.l3, thickness=self.leg_thickness, color=self.leg_color)
 
-		self.fl_hip = Line(x = -(self.body_w/2+self.l1/2), y = self.body_l/2, z = 0.3, y_rot = np.pi/2, length = self.l1, thickness=2)
-		self.fl_knee = Line(x = -(self.body_w/2+self.l1), y = self.body_l/2, z = 0.3-self.l2/2, length = self.l2, thickness=2)
-		self.fl_calf = Line(x = -(self.body_w/2+self.l1), y = self.body_l/2, z = 0.3-(self.l3/2+self.l2), length = self.l3, thickness=2)
+		self.fl_hip = Line(x = -(self.body_w/2+self.l1/2), y = self.body_l/2, z = 0.3, 
+							y_rot = np.pi/2, length = self.l1, 
+							thickness=self.leg_thickness, color=self.leg_color)
+		self.fl_knee = Line(x = -(self.body_w/2+self.l1), y = self.body_l/2, z = 0.3-self.l2/2, 
+							length = self.l2, 
+							thickness=self.leg_thickness, color=self.leg_color)
+		self.fl_calf = Line(x = -(self.body_w/2+self.l1), y = self.body_l/2, z = 0.3-(self.l3/2+self.l2), 
+							length = self.l3, thickness=self.leg_thickness, color=self.leg_color)
 
-		self.rr_hip = Line(x = self.body_w/2+self.l1/2, y = -self.body_l/2, z = 0.3, y_rot = np.pi/2, length = self.l1, thickness=2)
-		self.rr_knee = Line(x = self.body_w/2+self.l1, y = -self.body_l/2, z = 0.3-self.l2/2, length = self.l2, thickness=2)
-		self.rr_calf = Line(x = self.body_w/2+self.l1, y = -self.body_l/2, z = 0.3-(self.l3/2+self.l2), length = self.l3, thickness=2)
+		self.rr_hip = Line(x = self.body_w/2+self.l1/2, y = -self.body_l/2, z = 0.3, 
+							y_rot = np.pi/2, length = self.l1, 
+							thickness=self.leg_thickness, color=self.leg_color)
+		self.rr_knee = Line(x = self.body_w/2+self.l1, y = -self.body_l/2, z = 0.3-self.l2/2, 
+							length = self.l2, 
+							thickness=self.leg_thickness, color=self.leg_color)
+		self.rr_calf = Line(x = self.body_w/2+self.l1, y = -self.body_l/2, z = 0.3-(self.l3/2+self.l2), 
+							length = self.l3, thickness=self.leg_thickness, color=self.leg_color)
 
-		self.rl_hip = Line(x = -(self.body_w/2+self.l1/2), y = -self.body_l/2, z = 0.3, y_rot = np.pi/2, length = self.l1, thickness=2)
-		self.rl_knee = Line(x = -(self.body_w/2+self.l1), y = -self.body_l/2, z = 0.3-self.l2/2, length = self.l2, thickness=2)
-		self.rl_calf = Line(x = -(self.body_w/2+self.l1), y = -self.body_l/2, z = 0.3-(self.l3/2+self.l2), length = self.l3, thickness=2)
+		self.rl_hip = Line(x = -(self.body_w/2+self.l1/2), y = -self.body_l/2, z = 0.3, 
+							y_rot = np.pi/2, length = self.l1, 
+							thickness=self.leg_thickness, color=self.leg_color)
+		self.rl_knee = Line(x = -(self.body_w/2+self.l1), y = -self.body_l/2, z = 0.3-self.l2/2, 
+							length = self.l2, 
+							thickness=self.leg_thickness, color=self.leg_color)
+		self.rl_calf = Line(x = -(self.body_w/2+self.l1), y = -self.body_l/2, z = 0.3-(self.l3/2+self.l2), 
+							length = self.l3, thickness=self.leg_thickness, color=self.leg_color)
 
 		self.shapes = [self.body, 
 						self.fl_hip, self.fl_knee, self.fl_calf,
