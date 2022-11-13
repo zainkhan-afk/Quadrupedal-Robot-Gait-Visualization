@@ -17,6 +17,7 @@ class Quadruped:
 		self.body_initial_height = 0.3
 		self.robot_x = 0
 		self.robot_y = 0
+		self.robot_translation = 0
 		self.name = "QUADRUPED"
 		self.body_w = 0.099328
 		self.body_l = 0.392
@@ -125,7 +126,7 @@ class Quadruped:
 		joint_positions = []
 
 		max_z_height = 0
-		y_movement = 0
+		self.robot_translation = 0
 
 
 		idx = 0
@@ -137,7 +138,7 @@ class Quadruped:
 
 			if leg_pos[2]<max_z_height:
 				max_z_height = leg_pos[2]
-				y_movement
+				self.robot_translation
 
 			if self.leg_prev[idx] is None:
 				self.leg_prev[idx] = leg_pos[0]
@@ -145,11 +146,14 @@ class Quadruped:
 			diff = leg_pos[0] - self.leg_prev[idx]
 			self.leg_prev[idx] = leg_pos[0]
 			if diff>0:
-				y_movement = diff
+				self.robot_translation = diff
 
 			idx += 1
 
-		self.body.translate(0, self.robot_y, -max_z_height)
-		self.robot_y += y_movement
+		if self.robot_translation<1e-5:
+			self.robot_translation = 0
+		# print(self.robot_translation)
+		self.body.translate(0, 0, -max_z_height)
+		# self.robot_y += self.robot_translation
 
 		self.move_joints(joint_positions)

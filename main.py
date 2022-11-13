@@ -12,13 +12,13 @@ scene = Scene(width = scene_width, height = scene_height)
 
 quadruped = Quadruped()
 
-camera = Camera(x = 0, y = 0, z = 10, 
+camera = Camera(x = 0, y = 0, z = 5, 
 				cx = scene_width//2, cy = scene_height//2, 
 				fx = 2000, fy = 2000, 
 				x_rot = np.pi/6, z_rot = 4*np.pi/3)
 
 scene.add_camera(camera)
-scene.add_axis(size = 50, scaler=0.1)
+scene.add_axis(size = 25, scaler=0.1)
 scene.add_stick_figure(quadruped)
 
 ang = 0
@@ -28,6 +28,7 @@ camera_z = 7
 quadruped.stand_up()
 while True:
 	quadruped.walk()
+	scene.move_axis(delta_y = -quadruped.robot_translation)
 	ang += 0.025
 	k = scene.render_scene()
 	if k == ord("q"):
