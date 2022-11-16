@@ -1,14 +1,39 @@
 import numpy as np
+from copy import deepcopy
+import matplotlib.pyplot as plt
 
 class Trot:
 	def __init__(self):
-		delta = 0.01
-		num_vert_steps = 25
-		temp1 = list(np.arange(-0.1, 0.1+delta, delta))
-		temp2 = sorted(list(np.arange(-0.1, 0.1+delta, delta)), reverse=True)
-		self.x = [-0.1]*num_vert_steps + temp1 + [0.1]*num_vert_steps + temp2
+		num_traj_pts = 25
+		deg = 0
+		delta_deg = 180/num_traj_pts
+
+		self.step_length = 0.1
+		self.step_height = 0.1
+
+		self.x = []
+		self.z = []
+
+		for i in range(num_traj_pts+1):
+			val =  np.cos(deg*np.pi/180)*self.step_length 
+			self.x.append(val)
+			val =  -0.3 + np.sin(deg*np.pi/180)*self.step_height 
+			self.z.append(val)
+			deg += delta_deg
+
+		self.x.reverse()
+		delta = 2*self.step_length / len(self.x)
+		temp_x = list(np.clip(np.arange(-self.step_length, self.step_length+delta, delta), -self.step_length, self.step_length))[1:-1]
+		temp_x.reverse()
+		self.x = self.x + temp_x
 		self.y = [0.077476]*len(self.x)
-		self.z = list(np.linspace(-0.3, -0.2, num_vert_steps))+[-0.2]*len(temp1) + list(np.linspace(-0.2, -0.3, num_vert_steps)) + [-0.3]*len(temp1)
+		self.z = self.z + [-0.3]*len(temp_x)
+
+		plt.scatter(self.x, self.z)
+		plt.show()
+
+		# self.z = [-0.3]*len(self.x)
+		# self.z = list(np.linspace(-0.3, -0.2, num_vert_steps))+[-0.2]*len(temp1) + list(np.linspace(-0.2, -0.3, num_vert_steps)) + [-0.3]*len(temp1)
 
 
 	def get_leg_positions(self, i):
