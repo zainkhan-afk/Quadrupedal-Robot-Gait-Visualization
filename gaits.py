@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 class Trot:
 	def __init__(self):
-		num_traj_pts = 25
+		num_traj_pts = 20
 		deg = 0
 		delta_deg = 180/num_traj_pts
 
@@ -23,14 +23,14 @@ class Trot:
 
 		self.x.reverse()
 		delta = 2*self.step_length / len(self.x)
-		temp_x = list(np.clip(np.arange(-self.step_length, self.step_length+delta, delta), -self.step_length, self.step_length))[1:-1]
+		temp_x = list(np.clip(np.arange(-self.step_length, self.step_length+delta, delta), -self.step_length, self.step_length))[2:-2]
 		temp_x.reverse()
 		self.x = self.x + temp_x
 		self.y = [0.077476]*len(self.x)
 		self.z = self.z + [-0.3]*len(temp_x)
 
-		plt.scatter(self.x, self.z)
-		plt.show()
+		# plt.scatter(self.x, self.z)
+		# plt.show()
 
 		# self.z = [-0.3]*len(self.x)
 		# self.z = list(np.linspace(-0.3, -0.2, num_vert_steps))+[-0.2]*len(temp1) + list(np.linspace(-0.2, -0.3, num_vert_steps)) + [-0.3]*len(temp1)
