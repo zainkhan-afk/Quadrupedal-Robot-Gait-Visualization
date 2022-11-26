@@ -12,11 +12,10 @@ class Quadruped:
 	def __init__(self, x = 0, y = 0, z = 0,
 					   x_rot = 0, y_rot = 0, 
 					   z_rot = 0):
-		# Shape.__init__(self, x, y, z, x_rot, y_rot, z_rot)
 
 		self.robot_x = 0
 		self.robot_y = 0
-		self.body_initial_height = 0.3
+		self.body_initial_height = 0.25
 
 		self.x_rot = 0
 		self.y_rot = 0
@@ -37,7 +36,7 @@ class Quadruped:
 		self.trot = Trot()
 		self.gait_idx = 0
 
-		self.leg_thickness = 5
+		self.leg_thickness = 3
 		self.leg_color = (0, 0, 0)
 
 		self.leg_prev = [None, None, None, None]
@@ -111,6 +110,7 @@ class Quadruped:
 						self.rl_j1, self.rl_j2, self.rl_j3,
 						self.rr_j1, self.rr_j2, self.rr_j3
 						]
+		self.temp_idx = -1
 	def rotate_body(self, x_rot = 0, y_rot = 0, z_rot = 0):
 		self.x_rot = x_rot
 		self.y_rot = y_rot
@@ -127,22 +127,25 @@ class Quadruped:
 		for leg_pos in all_leg_pos:
 			# print(leg_pos)
 			th1, th2, th3 = self.leg_kinematics.IK(leg_pos[0], leg_pos[1], leg_pos[2])
-			# if idx in [1, 3]:
-			# 	joint_positions.append(-th1)
-			# else:
-			joint_positions.append(th1)
+			
+			joint_positions.append(-th1)
 			joint_positions.append(th2)
 			joint_positions.append(th3)
 
 			idx +=1
 
-		# th1, th2, th3 = self.leg_kinematics.IK(0.1, 0, -self.body_initial_height)
+		# th1, th2, th3 = self.leg_kinematics.IK(0, self.l1, self.temp_idx*self.body_initial_height)
+		# print(round(self.temp_idx, 3), th1*180/np.pi, th2*180/np.pi, th3*180/np.pi)
 		# joint_positions = [
 		# 				th1,th2,th3,
-		# 				-th1,th2,th3,
-		# 				th1,th2,th3,
-		# 				-th1,th2,th3
+		# 				# th1,th2,th3,
+		# 				# th1,th2,th3,
+		# 				# th1,th2,th3
 		# 					]
+		# self.temp_idx += 0.01
+		# if self.temp_idx> 1:
+		# 	self.temp_idx = -1
+		# self.temp_idx *= -1
 		
 		self.move_joints(joint_positions)
 
@@ -183,8 +186,8 @@ class Quadruped:
 
 		if self.robot_translation<1e-5:
 			self.robot_translation = 0
-		# print(self.robot_translation)
+
 		self.body.translate(0, 0, -max_z_height)
-		# self.robot_y += self.robot_translation
+		self.robot_y += self.robot_translation
 
 		self.move_joints(joint_positions)
