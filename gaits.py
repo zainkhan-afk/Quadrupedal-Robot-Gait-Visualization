@@ -73,3 +73,80 @@ class Trot:
 		if i>=len(self.x):
 			i = 0
 		return all_leg_positions, i
+
+
+class TimingGait:
+	def __init__(self, Tg):
+		self.x_fl = []
+		self.y_fl = []
+		self.z_fl = []
+
+		self.num_pts = 100
+
+		self.Tg = Tg
+		self.t = 0
+		self.segment_t = [0,0,0,0]
+		self.delta_t = self.Tg/self.num_pts
+
+		self.step_length = 0.1
+		self.step_height = 0.1
+
+	def calculate_leg_i_position(self, leg_contact_timing):
+		'''
+		t0___________t1------------t2__________T
+		leg_contact_timing: [t1 - t0, t2 - t1, T - t2]
+		'''
+		leg_t_seg1 = leg_contact_timing[0]*self.Tg
+		leg_t_seg2 = leg_t_seg1 + leg_contact_timing[1]*self.Tg
+		leg_t_seg3 = leg_t_seg2 + leg_contact_timing[2]*self.Tg
+
+
+		leg_t_swing = leg_contact_timing[1]*self.Tg
+		leg_t_stance= leg_contact_timing[0]*self.Tg + leg_contact_timing[2]*self.Tg
+
+		leg_freq_swing = (1/leg_contact_timing[1]*self.Tg)/4
+
+		y = 0.077476
+
+		if 0 <= self.t < leg_t_seg1: # Leg stance
+			seg_t = self.t
+			x =  (leg_contact_timing[2]*self.Tg + seg_t)/leg_t_stance*self.step_length*2 - self.step_length
+			z = -0.3
+
+		elif leg_t_seg2 <= self.t <= self.Tg: # Leg stance
+			seg_t = self.t - leg_t_seg2
+			x =  seg_t/leg_t_stance*self.step_length*2 - self.step_length
+			z = -0.3
+
+		elif leg_t_seg1 <= self.t < leg_t_seg2: # Leg swinging
+			seg_t = self.t - leg_t_seg1
+			val =  np.cos(np.pi*leg_freq_swing*seg_t)*self.step_length 
+			x = val
+			val =  -0.3 + np.sin(np.pi*leg_freq_swing*seg_t)*self.step_height 
+			z = val
+
+		return -x, y, z
+
+	def calculate_leg_positions(self, contact_timing_matrix):
+		leg_positions = []
+		for i in range(4):
+			x, y, z = self.calculate_leg_i_position(contact_timing_matrix[i])
+			leg_positions.append([x, y, z])
+
+		self.t         += self.delta_t
+		if self.t >= self.Tg:
+			self.t = 0
+			# exit()
+
+		return leg_positions
+
+if __name__ == "__main__":
+	contact_timing_matrix = [
+								[0.0, 0.5, 0.5],
+								[0.5, 0.5, 0.0],
+								[0.0, 0.5, 0.5],
+								[0.5, 0.5, 0.0]
+							]
+	tg = TimingGait(1)
+	while True:
+		tg.calculate_leg_positions(contact_timing_matrix)
