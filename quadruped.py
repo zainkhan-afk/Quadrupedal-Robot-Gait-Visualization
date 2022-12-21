@@ -129,8 +129,15 @@ class Quadruped:
 			th1, th2, th3 = self.leg_kinematics.IK(leg_pos[0], leg_pos[1], leg_pos[2])
 			
 			joint_positions.append(-th1)
-			joint_positions.append(th2)
-			joint_positions.append(th3)
+			if idx in [0, 2]:
+				joint_positions.append(th2)
+			else:
+				joint_positions.append(th2)
+
+			if idx in [0, 2]:
+				joint_positions.append(th3)
+			else:
+				joint_positions.append(th3)
 
 			idx +=1
 
@@ -138,14 +145,13 @@ class Quadruped:
 		# print(round(self.temp_idx, 3), th1*180/np.pi, th2*180/np.pi, th3*180/np.pi)
 		# joint_positions = [
 		# 				th1,th2,th3,
-		# 				# th1,th2,th3,
-		# 				# th1,th2,th3,
-		# 				# th1,th2,th3
+		# 				th1,th2,th3,
+		# 				th1,th2,th3,
+		# 				th1,th2,th3
 		# 					]
 		# self.temp_idx += 0.01
 		# if self.temp_idx> 1:
 		# 	self.temp_idx = -1
-		# self.temp_idx *= -1
 		
 		self.move_joints(joint_positions)
 

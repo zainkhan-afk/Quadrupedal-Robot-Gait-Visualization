@@ -42,8 +42,8 @@ class LegKinematicsModel:
 		if temp<-1:
 			temp = -1
 
-		theta3 = - np.arccos(temp)
-		theta2 = - np.pi/2 - np.arctan2(z_, x_) - np.arctan2(self.l3*np.sin(theta3),(self.l2 + self.l3*np.cos(theta3)))
+		theta3 =  - np.arccos(temp)
+		theta2 =  - np.pi/2 - (np.arctan2(z_, x_) + np.arctan2(self.l3*np.sin(theta3),(self.l2 + self.l3*np.cos(theta3))))
 
 		# R = np.sqrt(x_**2 + z_**2)
 

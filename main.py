@@ -34,14 +34,15 @@ camera_y = 0
 camera_z = 7
 quadruped.stand_up()
 while True:
-	quadruped.walk()
+	# quadruped.walk()
+	# rot_axis = 2
 	# if rot_axis == 0:
 	# 	quadruped.rotate_body(x_rot = np.pi/9*np.sin(ang))
 	# if rot_axis == 1:
 	# 	quadruped.rotate_body(y_rot = np.pi/9*np.sin(ang))
 	# if rot_axis == 2:
 	# 	quadruped.rotate_body(z_rot = np.pi/9*np.sin(ang))
-	scene.move_axis(delta_x = -quadruped.robot_translation)
+	# scene.move_axis(delta_x = -quadruped.robot_translation)
 	# camera.rotate(x_rot = np.pi/6, y_rot = 0, z_rot = ang)
 	ang += 0.025
 	if ang>2*np.pi:
