@@ -6,7 +6,7 @@ from cvrenderer.cvrenderer.shapes.joint import Joint
 import numpy as np
 
 from kinematics import LegKinematicsModel, BodyKinematicsModel
-from gaits import Trot
+from gaits import Trot, TimingGait
 
 class Quadruped:
 	def __init__(self, x = 0, y = 0, z = 0,
@@ -34,6 +34,7 @@ class Quadruped:
 		self.leg_kinematics = LegKinematicsModel()
 		self.body_kinematics = BodyKinematicsModel()
 		self.trot = Trot()
+		self.TimingGait = TimingGait(2)
 		self.gait_idx = 0
 
 		self.leg_thickness = 3
@@ -133,19 +134,6 @@ class Quadruped:
 			joint_positions.append(th3)
 
 			idx +=1
-
-		# th1, th2, th3 = self.leg_kinematics.IK(0, self.l1, self.temp_idx*self.body_initial_height)
-		# print(round(self.temp_idx, 3), th1*180/np.pi, th2*180/np.pi, th3*180/np.pi)
-		# joint_positions = [
-		# 				th1,th2,th3,
-		# 				# th1,th2,th3,
-		# 				# th1,th2,th3,
-		# 				# th1,th2,th3
-		# 					]
-		# self.temp_idx += 0.01
-		# if self.temp_idx> 1:
-		# 	self.temp_idx = -1
-		# self.temp_idx *= -1
 		
 		self.move_joints(joint_positions)
 
@@ -155,8 +143,9 @@ class Quadruped:
 			self.joints[i].set_joint_position(ang)
 			i += 1
 
-	def walk(self):
-		leg_positions, self.gait_idx = self.trot.get_leg_positions(self.gait_idx)
+	def walk(self, contact_timing_matrix):
+		leg_positions = self.TimingGait.calculate_leg_positions(contact_timing_matrix)
+		# leg_positions, self.gait_idx = self.trot.get_leg_positions(self.gait_idx)
 		joint_positions = []
 
 		max_z_height = 0
@@ -187,7 +176,7 @@ class Quadruped:
 		if self.robot_translation<1e-5:
 			self.robot_translation = 0
 
-		self.body.translate(0, 0, -max_z_height)
+		# self.body.translate(0, 0, -max_z_height)
 		self.robot_y += self.robot_translation
 
 		self.move_joints(joint_positions)
