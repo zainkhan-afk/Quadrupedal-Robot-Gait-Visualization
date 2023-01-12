@@ -18,7 +18,7 @@ The robot foot follows a half ellipse trajecotry. Each robot leg has a stance an
 ### Trotting Gait
 
 <p align="center">
-  <img src="media/gait_gallop_small.gif" alt="Galloping Gait Gif" />
+  <img src="media/gait_trot_small.gif" alt="Galloping Gait Gif" />
 </p>
 
 ### Galloping Gait
@@ -52,7 +52,7 @@ Whole body IK model has been derived which allows for body movements without mov
 The leg stance and flight periods can be changed manually using the gait scheduler GUI.
 
 <p align="center">
-  <img src="Gait_Scheduler.PNG" alt="Gait Scheduler GUI" />
+  <img src="media/Gait_Scheduler.PNG" alt="Gait Scheduler GUI" />
 </p>
 
 The sliders can be moved for each leg to change the leg stance and flight timings. 
