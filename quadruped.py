@@ -168,8 +168,8 @@ class Quadruped:
 
 			diff = leg_pos[0] - self.leg_prev[idx]
 			self.leg_prev[idx] = leg_pos[0]
-			if diff>0:
-				self.robot_translation = diff
+			if abs(diff)>self.robot_translation and diff < 0:
+				self.robot_translation = abs(diff)
 
 			idx += 1
 
@@ -177,6 +177,6 @@ class Quadruped:
 			self.robot_translation = 0
 
 		# self.body.translate(0, 0, -max_z_height)
-		self.robot_y += self.robot_translation
+		# self.robot_y += self.robot_translation
 
 		self.move_joints(joint_positions)
