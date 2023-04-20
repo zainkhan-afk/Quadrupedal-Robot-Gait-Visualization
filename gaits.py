@@ -91,6 +91,8 @@ class TimingGait:
 		self.step_length = 0.1
 		self.step_height = 0.1
 
+		self.heading = 0
+
 	def calculate_leg_i_position(self, leg_contact_timing):
 		'''
 		t0___________t1------------t2__________T
@@ -106,25 +108,29 @@ class TimingGait:
 
 		leg_freq_swing = (1/leg_contact_timing[1]*self.Tg)/4
 
-		y = 0.077476
 
 		if 0 <= self.t < leg_t_seg1: # Leg stance
 			seg_t = self.t
 			x =  (leg_contact_timing[2]*self.Tg + seg_t)/leg_t_stance*self.step_length*2 - self.step_length
+			y =  (leg_contact_timing[2]*self.Tg + seg_t)/leg_t_stance*self.step_length*2 - self.step_length
 			z = -0.3
 
 		elif leg_t_seg2 <= self.t <= self.Tg: # Leg stance
 			seg_t = self.t - leg_t_seg2
 			x =  seg_t/leg_t_stance*self.step_length*2 - self.step_length
+			y =  seg_t/leg_t_stance*self.step_length*2 - self.step_length
 			z = -0.3
 
 		elif leg_t_seg1 <= self.t < leg_t_seg2: # Leg swinging
 			seg_t = self.t - leg_t_seg1
 			val =  np.cos(np.pi*leg_freq_swing*seg_t)*self.step_length 
 			x = val
+			y = val
 			val =  -0.3 + np.sin(np.pi*leg_freq_swing*seg_t)*self.step_height 
 			z = val
 
+		x = x*np.cos(self.heading)
+		y = 0.077476 + y*np.sin(self.heading)
 		return -x, y, z
 
 	def calculate_leg_positions(self, contact_timing_matrix):
