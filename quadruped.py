@@ -7,6 +7,7 @@ import numpy as np
 
 from kinematics import LegKinematicsModel, BodyKinematicsModel
 from gaits import Trot, TimingGait
+from helpers import *
 
 class Quadruped:
 	def __init__(self, x = 0, y = 0, z = 0,
@@ -21,7 +22,9 @@ class Quadruped:
 		self.y_rot = 0
 		self.z_rot = 0
 
-		self.robot_translation = 0
+		# self.robot_translation = 0
+		self.robot_translation_x = 0
+		self.robot_translation_y = 0
 		self.name = "QUADRUPED"
 		# self.body_w = 0.099328
 		# self.body_l = 0.392
@@ -40,7 +43,7 @@ class Quadruped:
 		self.leg_thickness = 3
 		self.leg_color = (0, 0, 0)
 
-		self.leg_prev = [None, None, None, None]
+		self.leg_prev = [[None, None, None], [None, None, None], [None, None, None], [None, None, None]]
 
 		self.body = Cube(x=0, y=0, z=self.body_initial_height, h=self.body_l, w=self.body_w, l=self.body_l/2, thickness=2)
 		
@@ -120,6 +123,12 @@ class Quadruped:
 		self.body.rotate(self.x_rot, self.y_rot, self.z_rot)
 		self.stand_up()
 
+	def change_heading(self, angle, degrees = False):
+		if degrees:
+			angle = angle*np.pi/180
+
+		self.TimingGait.heading += angle
+
 	def stand_up(self):
 		all_leg_pos = self.body_kinematics.solve(0, self.l1, -self.body_initial_height, x_rot = self.x_rot, y_rot = self.y_rot, z_rot = self.z_rot)
 		joint_positions = []
@@ -149,7 +158,8 @@ class Quadruped:
 		joint_positions = []
 
 		max_z_height = 0
-		self.robot_translation = 0
+		self.robot_translation_x = 0
+		self.robot_translation_y = 0
 
 
 		idx = 0
@@ -161,20 +171,37 @@ class Quadruped:
 
 			if leg_pos[2]<max_z_height:
 				max_z_height = leg_pos[2]
-				self.robot_translation
+				# self.robot_translation
 
-			if self.leg_prev[idx] is None:
-				self.leg_prev[idx] = leg_pos[0]
+			if self.leg_prev[idx][0] is None:
+				self.leg_prev[idx][0] = leg_pos[0]
 
-			diff = leg_pos[0] - self.leg_prev[idx]
-			self.leg_prev[idx] = leg_pos[0]
-			if abs(diff)>self.robot_translation and diff < 0:
-				self.robot_translation = abs(diff)
+			if self.leg_prev[idx][1] is None:
+				self.leg_prev[idx][1] = leg_pos[1]
 
+
+			if almost_equal(leg_pos[2], -0.3):
+				diff = leg_pos[0] - self.leg_prev[idx][0]
+				if abs(diff)>abs(self.robot_translation_x):
+					self.robot_translation_x = diff
+
+				diff = leg_pos[1] - self.leg_prev[idx][1]
+				if abs(diff)>abs(self.robot_translation_y):
+					self.robot_translation_y = -diff
+
+			self.leg_prev[idx][0] = leg_pos[0]
+			self.leg_prev[idx][1] = leg_pos[1]
 			idx += 1
 
-		if self.robot_translation<1e-5:
-			self.robot_translation = 0
+		# print()
+		# print(self.robot_translation_x, self.robot_translation_y)
+
+		if abs(self.robot_translation_x)<1e-5:
+			self.robot_translation_x = 0
+
+		if abs(self.robot_translation_y)<1e-5:
+			self.robot_translation_y = 0
+		# print(self.robot_translation_x, self.robot_translation_y)
 
 		# self.body.translate(0, 0, -max_z_height)
 		# self.robot_y += self.robot_translation

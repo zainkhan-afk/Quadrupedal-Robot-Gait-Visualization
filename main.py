@@ -45,7 +45,7 @@ while True:
 	# 	quadruped.rotate_body(y_rot = np.pi/9*np.sin(ang))
 	# if rot_axis == 2:
 	# 	quadruped.rotate_body(z_rot = np.pi/9*np.sin(ang))
-	scene.move_axis(delta_x = -quadruped.robot_translation)
+	scene.move_axis(delta_x = quadruped.robot_translation_x, delta_y = quadruped.robot_translation_y)
 	# camera.rotate(x_rot = np.pi/6, y_rot = 0, z_rot = ang)
 	ang += 0.025
 	if ang>2*np.pi:
@@ -63,3 +63,9 @@ while True:
 	k = scene.render_scene()
 	if k == ord("q"):
 		break
+
+	if k == ord("a"):
+		quadruped.change_heading(5, degrees = True)
+
+	if k == ord("d"):
+		quadruped.change_heading(-5, degrees = True)
