@@ -138,7 +138,23 @@ class Quadruped:
 			# print(leg_pos)
 			th1, th2, th3 = self.leg_kinematics.IK(leg_pos[0], leg_pos[1], leg_pos[2])
 			
-			joint_positions.append(-th1)
+			joint_positions.append(th1)
+			joint_positions.append(th2)
+			joint_positions.append(th3)
+
+			idx +=1
+		
+		self.move_joints(joint_positions)
+	
+	def move_legs_to(self, all_leg_pos):
+		joint_positions = []
+		idx = 0
+		# print()
+		for leg_pos in all_leg_pos:
+			# print(leg_pos)
+			th1, th2, th3 = self.leg_kinematics.IK(leg_pos[0], leg_pos[1], leg_pos[2])
+			
+			joint_positions.append(th1)
 			joint_positions.append(th2)
 			joint_positions.append(th3)
 

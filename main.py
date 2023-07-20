@@ -35,9 +35,20 @@ camera_x = 0
 camera_y = 0
 camera_z = 7
 quadruped.stand_up()
+
+all_leg_pos = np.array([
+						[0.3, quadruped.l1, -quadruped.body_initial_height],
+						[-0.3, quadruped.l1, -quadruped.body_initial_height],
+						[0.3, quadruped.l1, -quadruped.body_initial_height],
+						[-0.3, quadruped.l1, -quadruped.body_initial_height]
+						])
+
+# Roatate the position of the EE on the side where the legs are not placed properly in the body IK code
+
 while True:
 	# print(CT_UI.slider_percentages)
-	quadruped.walk(CT_UI.slider_percentages)
+	# quadruped.walk(CT_UI.slider_percentages)
+	quadruped.move_legs_to(all_leg_pos)
 	# rot_axis = 2
 	# if rot_axis == 0:
 	# 	quadruped.rotate_body(x_rot = np.pi/9*np.sin(ang))
@@ -45,7 +56,7 @@ while True:
 	# 	quadruped.rotate_body(y_rot = np.pi/9*np.sin(ang))
 	# if rot_axis == 2:
 	# 	quadruped.rotate_body(z_rot = np.pi/9*np.sin(ang))
-	scene.move_axis(delta_x = quadruped.robot_translation_x, delta_y = quadruped.robot_translation_y)
+	# scene.move_axis(delta_x = quadruped.robot_translation_x, delta_y = quadruped.robot_translation_y)
 	# camera.rotate(x_rot = np.pi/6, y_rot = 0, z_rot = ang)
 	ang += 0.025
 	if ang>2*np.pi:

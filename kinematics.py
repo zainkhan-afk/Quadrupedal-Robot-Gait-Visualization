@@ -19,20 +19,23 @@ class LegKinematicsModel:
 		self.l2 = 0.2115
 		self.l3 = 0.2
 
-
 	def IK(self, x, y, z):
 		R = np.sqrt(z**2 + y**2)
 
-		alpha = np.arccos(abs(y)/R)
-		beta  = np.arccos(self.l1/R)
+		beta = np.arccos(y/R)
+		alpha  = np.arccos(self.l1/R)
 
-		if y>=0:
-			theta1 = alpha - beta
-		else:
-			theta1 = np.pi - alpha - beta
+		theta1 = alpha - beta
 
-		x_ = x
-		z_ = -np.sqrt(z**2+y**2-self.l1**2)
+		R_x = get_rotation_matrix(-theta1, 0, 0)
+		R_yz = get_rotation_matrix(0, -np.pi/2, np.pi)
+
+		p = np.array([[x, y, z]]).T
+		p = R_yz@(R_x@p)
+
+		x_ = p[0, 0]
+		y_ = p[1, 0] + self.l1
+		z_ = p[2, 0]
 
 
 		temp = (x_**2 + z_**2 - self.l2**2 - self.l3**2)/(2*self.l2*self.l3)
@@ -42,22 +45,8 @@ class LegKinematicsModel:
 		if temp<-1:
 			temp = -1
 
-		theta3 =  - np.arccos(temp)
-		theta2 =  - np.pi/2 - (np.arctan2(z_, x_) + np.arctan2(self.l3*np.sin(theta3),(self.l2 + self.l3*np.cos(theta3))))
-
-		# R = np.sqrt(x_**2 + z_**2)
-
-
-		# theta3 = np.arccos((self.l2**2 + self.l3**2 - x_**2 - z_**2)/(2*self.l2*self.l3))
-
-		# phi = np.arccos(abs(x_)/R)
-		# psi = np.arccos((self.l2+self.l3*np.sin(theta3))/(R))
-		# if x_>=0:
-			# print("POSITIVE X")
-			# theta2 =   np.pi/2 - psi - phi
-		# else:
-			# print("NEGATIVE X")
-			# theta2 = - np.pi/2 - psi + phi
+		theta3 =   np.arccos(temp)
+		theta2 =   (np.arctan2(z_, x_) - np.arctan2(self.l3*np.sin(theta3),(self.l2 + self.l3*np.cos(theta3))))
 
 		return theta1, theta2, theta3
 
@@ -83,6 +72,7 @@ class BodyKinematicsModel:
 							[0, 0, 0, 1]
 							])
 			self.T_B_L.append(T)
+
 	def solve(self, x, y, z, x_rot = 0, y_rot = 0, z_rot = 0):
 		pt_L_ee = np.array([
 			[x],
